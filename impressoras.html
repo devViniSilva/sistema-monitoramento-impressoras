@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Controle de Impressoras</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f5f6f8;--card:#fff;--tx:#1b1f27;--mut:#6b7280;--bd:#e3e6eb;--ac:#2563eb;--ok:#15803d;--okb:#dcfce7;--wa:#b45309;--wab:#fef3c7;--er:#b91c1c;--erb:#fee2e2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12141a;--card:#1b1f27;--tx:#e8eaee;--mut:#9aa3b2;--bd:#2d333f;--ac:#60a5fa;--ok:#4ade80;--okb:#143323;--wa:#fbbf24;--wab:#3a2c0b;--er:#f87171;--erb:#3d1618}}
+:root[data-theme="dark"]{--bg:#12141a;--card:#1b1f27;--tx:#e8eaee;--mut:#9aa3b2;--bd:#2d333f;--ac:#60a5fa;--ok:#4ade80;--okb:#143323;--wa:#fbbf24;--wab:#3a2c0b;--er:#f87171;--erb:#3d1618}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:var(--mut);margin:0 0 14px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chip{background:var(--card);border:1px solid var(--bd);border-radius:999px;padding:4px 12px;font-size:13px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+input,select{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;min-width:0}
+.bar input{flex:1 1 200px}
+button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:8px 12px}
+button.p{background:var(--ac);border-color:var(--ac);color:#fff}
+button.d{color:var(--er)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px}
+.top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.top b{font-size:16px}
+.set{color:var(--mut);font-size:13px;margin-top:2px}.mk{background:var(--bd);color:var(--tx);font-weight:600;font-size:11px;padding:1px 7px;border-radius:6px}
+.meta{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin:10px 0;font-size:13px}
+.meta span:nth-child(odd){color:var(--mut)}
+.meta span:nth-child(even){font-family:ui-monospace,Menlo,Consolas,monospace;word-break:break-all}
+a.ip{display:inline-block;background:var(--ac);color:#fff;text-decoration:none;padding:6px 10px;border-radius:8px;font-size:13px;white-space:nowrap}
+.sup{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--bd)}
+.sup .n{flex:1}
+.sup small{display:block;color:var(--mut)}
+.q{display:flex;align-items:center;gap:6px}
+.q button{padding:2px 10px;font-size:18px;line-height:1.2}
+.q b{min-width:26px;text-align:center;font-size:16px}
+.tag{font-size:11px;padding:2px 8px;border-radius:999px;font-weight:600}
+.lv{height:7px;border-radius:4px;background:var(--bd);margin-top:5px;overflow:hidden;width:150px;max-width:100%}.lv i{display:block;height:100%}
+.lr{display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap}.lr .lv{margin-top:0;width:110px}.fo{font-size:11px}.cn{font-size:12px;min-width:50px}
+.rd{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--mut);margin:0 0 6px}
+.nn{background:var(--bd);color:var(--mut)}.ok{background:var(--okb);color:var(--ok)}.wa{background:var(--wab);color:var(--wa)}.er{background:var(--erb);color:var(--er)}
+.act{display:flex;gap:8px;margin-top:8px}
+textarea{width:100%;height:320px;font:13px/1.4 ui-monospace,Menlo,Consolas,monospace;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:10px;resize:vertical}
+.empty{text-align:center;color:var(--mut);padding:40px 0}
+dialog{border:1px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);width:min(460px,94vw);padding:18px}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+.f{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.f label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:3px}
+.f .w{grid-column:1/-1}
+.f input{width:100%}
+</style>
+</head>
+<body>
+<main>
+<h1>🖨️ Controle de Impressoras - FAMETRO </h1>
+<p class="sub">Cadastro, nível de toner e cilindro e acesso direto ao painel web de cada impressora.</p>
+<div class="chips" id="chips"></div>
+<div class="bar">
+<input id="q" placeholder="Buscar">
+<select id="fl"><option value="">Todas as unidades</option></select><select id="fs"><option value="">Todos os setores</option></select>
+<select id="fst"><option value="">Todos os status</option><option value="nosc">Scanner com problema</option><option value="off">Impressoras offline</option><option value="lvl">Nível instalado ≤ 15%</option><option value="lvl20">Nível instalado ≤ 20%</option></select>
+<button class="p" id="add">+ Impressora</button>
+<button id="colh" style="display:none" title="Lê agora as impressoras via SNMP">🔄 Coletar agora</button><button id="rel" title="Texto pronto para colar no WhatsApp, seguindo o filtro atual">📋 Relatório</button><button id="exp">Exportar</button>
+<button id="imp" title="Backup do sistema, leitura.json do coletor ou CSV do NDD">Importar</button>
+<input type="file" id="file" accept=".json,.csv" hidden>
+</div>
+<div class="grid" id="grid"></div>
+</main>
+
+<dialog id="dlg">
+<h3 id="dt" style="margin-top:0">Impressora</h3>
+<div class="f">
+<label>Setor<input id="f_setor"></label>
+<label>Local / Unidade<input id="f_local"></label><label>Marca<input id="f_marca" placeholder="HP, OKI, Brother..."></label><label class="w">Modelo<input id="f_modelo"></label>
+<label>Endereço IP<input id="f_ip" placeholder="192.168.0.10"></label>
+<label>Endereço MAC<input id="f_mac" placeholder="AA:BB:CC:DD:EE:FF"></label>
+<label>Número de série<input id="f_serie"></label><label>Scanner OK?<select id="f_scanner"><option value="">—</option><option value="sim">sim</option><option value="não">não</option></select></label>
+</div>
+<div class="act" style="justify-content:flex-end;margin-top:14px">
+<button id="cancel">Cancelar</button><button class="p" id="save">Salvar</button>
+</div>
+</dialog>
+
+<dialog id="rdlg">
+<h3 style="margin:0 0 4px">Relatório para o WhatsApp</h3>
+<p class="sub" style="margin:0 0 10px">Segue os filtros que estão ativos na tela. Você pode editar o texto antes de copiar.</p>
+<textarea id="rtxt"></textarea>
+<div class="act" style="justify-content:flex-end;margin-top:12px"><button id="rclose">Fechar</button><a class="ip" id="rwa" target="_blank" rel="noopener" style="padding:8px 12px">Abrir no WhatsApp ↗</a><button class="p" id="rcopy">Copiar</button></div>
+</dialog>
+<script>
+const KEY="impressoras_v1";
+const SEED=[{"id":"p0","setor":"COORD MEDICINA 2","local":"UN5","ip":"192.168.204.181","modelo":"HP Color LaserMFP M479fdw","mac":"C0:18:03:41:B7:B0","serie":"CNCRQ1K52Q","scanner":""},{"id":"p1","setor":"Dir regional","local":"UN1","ip":"192.168.204.140","modelo":"ES4172LP MFP","mac":"2C:FF:65:1C:C3:53","serie":"BW03024077","scanner":"sim"},{"id":"p2","setor":"APOIO TEC. LABORATÓRIOS SAUDE","local":"UN5","ip":"192.168.204.115","modelo":"OKI ES4172LPMFP","mac":"2C:FF:65:1C:C3:33","serie":"BW03024079","scanner":"sim"},{"id":"p3","setor":"AQUARIO","local":"UN5","ip":"192.168.204.156","modelo":"Brother DCP-L5512DN","mac":"94:DD:F8:02:F8:6C","serie":"DCP-L5512DN","scanner":"sim"},{"id":"p4","setor":"ARQUIVO","local":"UN1","ip":"192.168.204.127","modelo":"ES4172LP MFP","mac":"00:25:36:31:9B:E3","serie":"AK98001312","scanner":"sim"},{"id":"p5","setor":"ASSESSORIA DE OBRAS","local":"UN1","ip":"192.168.204.162","modelo":"ES4172LP MFP","mac":"00:25:36:B1:47:CB","serie":"AK9A017877","scanner":"sim"},{"id":"p6","setor":"BIBLIOTECA","local":"UN5","ip":"192.168.204.119","modelo":"ES5112","mac":"00:25:36:11:8E:74","serie":"AK89023723","scanner":"não"},{"id":"p7","setor":"CALL CENTER/COMERCIAL","local":"SECAD","ip":"192.168.204.41","modelo":"ES5162LP MFP","mac":"2C:FF:65:5C:E2:01","serie":"BW09016943","scanner":"não"},{"id":"p8","setor":"CLINICA","local":"CLÍNICA","ip":"192.168.204.136","modelo":"OKI ES5162LP","mac":"00:25:36:7E:D4:6B","serie":"AK71036091","scanner":"sim"},{"id":"p9","setor":"CLINICA VETERINARIA","local":"CLINICAS MED VET","ip":"192.168.204.132","modelo":"ES5162LP MFP","mac":"00:25:36:7E:9A:F8","serie":"AK72001835","scanner":""},{"id":"p10","setor":"COMPRAS","local":"UN1","ip":"192.168.204.182","modelo":"ES4172LP MFP","mac":"00:25:36:E1:1E:6C","serie":"AK88017561","scanner":"sim"},{"id":"p11","setor":"CONTABILIDADE","local":"UN1","ip":"192.168.204.135","modelo":"ES5112","mac":"00:25:36:91:06:83","serie":"AK8B014358","scanner":"não"},{"id":"p12","setor":"CONTROLADORIA","local":"UN1","ip":"192.168.204.166","modelo":"ES4172LP MFP","mac":"00:25:36:E1:1E:DC","serie":"AK88017558","scanner":"sim"},{"id":"p13","setor":"COOR. PEDA COLEGIO FAMETRO","local":"CEMETRO","ip":"192.168.204.105","modelo":"Brother DCP-L5512DN","mac":"B4:22:00:DD:D5:A3","serie":"BRNB42200DDD5A3","scanner":"sim"},{"id":"p14","setor":"COORD ADM/CONT","local":"UN2","ip":"192.168.204.153","modelo":"HP Laser MFP 432fdn","mac":"30:13:8B:45:91:8F","serie":"BRBSSCG180","scanner":"sim"},{"id":"p15","setor":"COORD de Turismo/Jornalis","local":"UN1","ip":"192.168.204.164","modelo":"ES5112","mac":"00:25:36:11:8E:CA","serie":"AK89023767","scanner":"não"},{"id":"p16","setor":"COORD DIREITO","local":"UN1","ip":"192.168.204.120","modelo":"HP MFP 432","mac":"30:13:8B:41:A2:7B","serie":"BRBSS9V02V","scanner":"sim"},{"id":"p17","setor":"COORD ENSINO","local":"UN1","ip":"192.168.204.179","modelo":"ES4172LP MFP","mac":"00:25:36:51:CF:9B","serie":"AK93014173","scanner":"sim"},{"id":"p18","setor":"COORD GERAL","local":"UN5","ip":"192.168.204.15","modelo":"Brother DCP-L5512DW","mac":"94:DD:F8:5A:27:D5","serie":"","scanner":"sim"},{"id":"p19","setor":"COORD LABORATORIO","local":"UN5","ip":"192.168.204.57","modelo":"ES4172LP MFP","mac":"2C:FF:65:1C:C3:33","serie":"BW03024077","scanner":"sim"},{"id":"p20","setor":"COORD MEDICINA","local":"UN5","ip":"192.168.204.154","modelo":"BROTHER - DCPL5512DW","mac":"94:DD:F8:5A:27:7C","serie":"DCP-L5512DN","scanner":"sim"},{"id":"p21","setor":"COORD PEDAG (EAD)","local":"UN2","ip":"192.168.204.152","modelo":"ES5162LP MFP","mac":"00:25:36:7E:B4:42","serie":"AK71036156","scanner":"sim"},{"id":"p22","setor":"COORD PESQUI. EXTENSÃO","local":"UN2","ip":"192.168.204.151","modelo":"ES5112","mac":"00:25:36:91:45:D2","serie":"AK8B037823","scanner":"não"},{"id":"p23","setor":"COORD SIST INF","local":"UN1","ip":"192.168.204.141","modelo":"ES4172LP MFP","mac":"00:25:36:31:2B:A7","serie":"AK97023443","scanner":"sim"},{"id":"p24","setor":"COORD_GERAL_2","local":"UN5","ip":"192.168.204.175","modelo":"Brother DCP-L5512DW","mac":"94:DD:F8:63:3B:98","serie":"","scanner":"não"},{"id":"p25","setor":"COORD.ARQUITETURA","local":"UN1","ip":"192.168.204.122","modelo":"ES5112","mac":"00:25:36:11:8E:52","serie":"AK89023757","scanner":"sim"},{"id":"p26","setor":"COORD.ELETRICA","local":"UN1","ip":"192.168.204.144","modelo":"ES4172LP MFP","mac":"2C:FF:65:1C:43:2D","serie":"BW03023920","scanner":"sim"},{"id":"p27","setor":"CPAR","local":"UN1","ip":"192.168.204.12","modelo":"HP 432fdn","mac":"C0:18:03:9C:10:09","serie":"BRBSQCB0YD","scanner":"sim"},{"id":"p28","setor":"CPJUR","local":"UN1","ip":"192.168.204.159","modelo":"ES5112","mac":"2C:FF:65:9C:D1:14","serie":"BW07004249","scanner":"não"},{"id":"p29","setor":"CRA","local":"SECAD","ip":"192.168.204.131","modelo":"ES5162","mac":"00:25:36:11:8E:C2","serie":"AK89023751","scanner":"nao"},{"id":"p30","setor":"DIPLOMAS","local":"UN1","ip":"192.168.204.161","modelo":"ES5112","mac":"00:25:36:11:8E:2D","serie":"AK89023750","scanner":"nao"},{"id":"p31","setor":"DIPLOMAS","local":"SECAD","ip":"192.168.204.183","modelo":"DCP-L5512DW","mac":"94:DD:F8:5A:26:46","serie":"U68089M4N394913","scanner":"não"},{"id":"p32","setor":"DIR ADM JUNIOR","local":"UN1","ip":"192.168.204.147","modelo":"ES5162LP","mac":"00:25:36:DE:41:C5","serie":"AK68029428","scanner":"sim"},{"id":"p33","setor":"DIR ENGENHARIAS","local":"UN1","ip":"192.168.204.185","modelo":"EPSON WF-C5890 Series-73E5C7","mac":"A4:D7:3C:73:E5:C7","serie":"WF-C5890 Series","scanner":"sim"},{"id":"p34","setor":"DIR FINANCEIRO","local":"UN1","ip":"192.168.204.134","modelo":"ES4172LP MFP","mac":"00:25:36:51:D5:59","serie":"AK92013284","scanner":"sim"},{"id":"p35","setor":"DIREÇÃO CEMETRO","local":"CEMETRO","ip":"192.168.204.70","modelo":"BROTHER - DCPL5512DN","mac":"B4:22:00:DD:D4:5B","serie":"BRNB42200DDD45B","scanner":""},{"id":"p36","setor":"DTI","local":"UN2","ip":"192.168.204.11","modelo":"ES4172LP MFP","mac":"00:25:36:E1:1E:AC","serie":"AK88017562","scanner":"sim"},{"id":"p37","setor":"EAD","local":"UN2","ip":"192.168.204.10","modelo":"WF-C5890 Series","mac":"A4:D7:3C:70:25:86","serie":"","scanner":"sim"},{"id":"p38","setor":"ENADE RP 01","local":"UN5","ip":"192.168.204.116","modelo":"RICOH AFICIO MP 7502","mac":"00:26:73:5D:74:F5","serie":"W873L300274","scanner":"sim"},{"id":"p39","setor":"ENADE RP 02","local":"UN5","ip":"192.168.204.178","modelo":"RICOH AFICIO MP 7502","mac":"00:26:73:43:AC:7C","serie":"W873LC00504","scanner":"sim"},{"id":"p40","setor":"ENADE RP 03","local":"UN5","ip":"192.168.204.117","modelo":"SAVIN 8065","mac":"00:00:74:B0:A6:64","serie":"SAVIN 8065","scanner":"sim"},{"id":"p41","setor":"ENADE RP 04","local":"UN5","ip":"192.168.204.118","modelo":"HP LASER 408DN","mac":"30:13:8B:47:E9:C8","serie":"BRBST1F0DJ","scanner":"não"},{"id":"p42","setor":"Engenharia Obras","local":"UN1","ip":"192.168.204.142","modelo":"ES4172LP MFP","mac":"00:25:36:E1:1E:2C","serie":"AK88017559","scanner":"sim"},{"id":"p43","setor":"Fametrotech Coord. Tecnic","local":"SECAD","ip":"192.168.204.187","modelo":"DCP-L5512DW","mac":"94:DD:F8:5A:27:F4","serie":"BRN94DDF85A27F4","scanner":"sim"},{"id":"p44","setor":"FIES","local":"SECAD","ip":"192.168.204.13","modelo":"ES5112","mac":"00:25:36:51:6F:8D","serie":"AK93014303","scanner":"sim"},{"id":"p45","setor":"FINANCEIRO ATENDIMENTO","local":"UN1","ip":"192.168.204.146","modelo":"ES5162LP MFP","mac":"00:25:36:7E:D4:83","serie":"AK71036106","scanner":"sim"},{"id":"p46","setor":"FINANCEIRO CEMETRO","local":"CEMETRO","ip":"192.168.204.68","modelo":"BROTHER - DCPL5512DN","mac":"B4:22:00:DD:D4:02","serie":"BRNB42200DDD402","scanner":""},{"id":"p47","setor":"HORÁRIO","local":"UN5","ip":"192.168.204.184","modelo":"ES4172LP MFP","mac":"00:25:36:31:1B:0D","serie":"BRN94DDF8633B98","scanner":"sim"},{"id":"p48","setor":"JURIDICO","local":"UN1","ip":"192.168.204.157","modelo":"ES5162LP","mac":"00:25:36:5E:57:12","serie":"AK71036157A0","scanner":"sim"},{"id":"p49","setor":"MARKETING","local":"UN1","ip":"192.168.204.148","modelo":"HP Color Laser Jet Pro M454dw","mac":"48:9E:BD:69:19:1B","serie":"VNB3H02423","scanner":"não"},{"id":"p50","setor":"NADI","local":"SECAD","ip":"192.168.204.49","modelo":"HP Laser MFP 432fdn","mac":"30:13:8B:45:94:30","serie":"BRBSSCH01Q","scanner":"sim"},{"id":"p51","setor":"NEAD","local":"UN2","ip":"192.168.204.126","modelo":"ES4172LP MFP","mac":"2C:FF:65:1C:C3:13","serie":"BW03024073","scanner":"sim"},{"id":"p52","setor":"NPJ","local":"SECAD","ip":"192.168.204.32","modelo":"ES4172LP MFP","mac":"00:25:36:51:EF:2D","serie":"AK93014448","scanner":"sim"},{"id":"p53","setor":"PEDAGOGIA CEMETRO","local":"CEMETRO","ip":"192.168.204.105","modelo":"BROTHER - DCPL5512DN","mac":"B4:22:00:DD:D5:A3","serie":"BRNB42200DDD5A3","scanner":""},{"id":"p54","setor":"POS_GRADUACAO","local":"UN1","ip":"192.168.204.73","modelo":"ES5162LP MFP","mac":"2C:FF:65:5C:E2:66","serie":"BW09016955","scanner":"sim"},{"id":"p55","setor":"PRESIDENCIA","local":"UN1","ip":"192.168.204.30","modelo":"ES8473LP MFP","mac":"00:25:36:BE:DA:2F","serie":"AL6B054096","scanner":"sim"},{"id":"p56","setor":"PRO-REITORIA","local":"UN1","ip":"192.168.204.129","modelo":"ES5162LP MFP","mac":"00:25:36:7E:9A:CC","serie":"AK72001769","scanner":"sim"},{"id":"p57","setor":"PROCURADORIA INSTITUCIONAL","local":"UN1","ip":"192.168.204.167","modelo":"ES4172LP MFP","mac":"00:25:36:81:0E:04","serie":"AK78026593","scanner":"sim"},{"id":"p58","setor":"PROCURADORIA INSTITUCIONAL 2","local":"UN1","ip":"192.168.204.145","modelo":"ES5162LP","mac":"00:25:36:7E:9A:1C","serie":"AK72001772","scanner":""},{"id":"p59","setor":"RECURSO UNIDADE 5","local":"UN5","ip":"192.168.204.123","modelo":"ES5112","mac":"00:25:36:11:8E:5D","serie":"AK89023728","scanner":"não"},{"id":"p60","setor":"REPROGRAFIA CEMETRO","local":"CEMETRO","ip":"192.168.204.139","modelo":"WF-C5810 Series","mac":"A4:D7:3C:6E:C2:B8","serie":"WF-C5810 Series","scanner":""},{"id":"p61","setor":"RH","local":"UN1","ip":"192.168.204.53","modelo":"ES4172LP MFP","mac":"00:25:36:51:EF:07","serie":"AK93014482","scanner":"sim"},{"id":"p62","setor":"SECAD - MATRICULAS 1","local":"SECAD","ip":"192.168.204.180","modelo":"BROTHER - DCPL5512DW","mac":"94:DD:F8:5A:26:98","serie":"BRN94DDF85A2698","scanner":"sim"},{"id":"p63","setor":"SECAD - MATRICULAS 2","local":"SECAD","ip":"192.168.204.149","modelo":"BROTHER - DCPL5512DW","mac":"94:DD:F8:5A:27:E4","serie":"BRN94DDF85A27E4","scanner":"sim"},{"id":"p64","setor":"SECAD BOLSAS","local":"SECAD","ip":"192.168.204.133","modelo":"ES5162LP MFP","mac":"00:25:36:7E:B4:02","serie":"AK71036155","scanner":"sim"},{"id":"p65","setor":"SECAD INTERNO","local":"SECAD","ip":"192.168.204.124","modelo":"ES5112","mac":"00:25:36:11:8E:F2","serie":"AK89023763","scanner":"não"},{"id":"p66","setor":"SECRETARIA CEMETRO","local":"CEMETRO","ip":"192.168.204.155","modelo":"BROTHER - DCPL5512DN","mac":"B4:22:00:DD:D4:92","serie":"BRNB42200DDD492","scanner":""},{"id":"p67","setor":"SEGURANÇA PATRIMONIAL","local":"UN1","ip":"192.168.204.138","modelo":"ES5112","mac":"00:25:36:11:8E:F4","serie":"AK89023724","scanner":"sim"},{"id":"p68","setor":"TESOURARIA (MARIA)","local":"UN1","ip":"192.168.204.125","modelo":"ES5162LP","mac":"00:25:36:7E:D4:43","serie":"AK71036107","scanner":"sim"},{"id":"p69","setor":"VICE DIREÇÃO ADMINISTRATIVA","local":"UN1","ip":"192.168.204.160","modelo":"ES4172LP MFP","mac":"00:25:36:E1:1E:E6","serie":"AK88017586","scanner":"sim"},{"id":"p70","setor":"VICE PRESIDENCIA","local":"UN1","ip":"192.168.204.173","modelo":"ES4172LP","mac":"00:25:36:E1:1E:CE","serie":"","scanner":""},{"id":"p71","setor":"ZL ATENTIMENTO FAMETROTEC","local":"ZL","ip":"192.168.163.22","modelo":"HP Laser MFP 432","mac":"C0:18:03:99:95:55","serie":"BRBSQ8G0B8","scanner":""},{"id":"p72","setor":"ZL FINANCEIRO FAMETROTEC","local":"ZL","ip":"192.168.162.149","modelo":"HP Laser MFP 432","mac":"C0:18:03:99:98:52","serie":"BRBSQ8G0CB","scanner":""},{"id":"p73","setor":"ZL COORD DE CURSO","local":"ZL","ip":"192.168.160.168","modelo":"HP MFP E52645","mac":"","serie":"BRBST7400Y","scanner":""},{"id":"p74","setor":"ZL COORD DIREITO","local":"ZL","ip":"192.168.162.73","modelo":"OKI ES5162LP MFP","mac":"00:25:36:7E:9A:4C","serie":"AK72001770","scanner":"sim"},{"id":"p75","setor":"ZL SECAD","local":"ZL","ip":"192.168.160.96","modelo":"HP Laser MFP 432","mac":"E4:E7:49:FE:16:90","serie":"BRBSQCB0T9","scanner":""},{"id":"p76","setor":"ZL NPJ","local":"ZL","ip":"192.168.161.161","modelo":"HP Laser 408","mac":"","serie":"BRBSN8654S","scanner":""},{"id":"p77","setor":"ZL NADI","local":"ZL","ip":"192.168.160.121","modelo":"HPLaser 408","mac":"30:13:8B:47:E9:C0","serie":"BRBST1F0DW","scanner":""}];
+let data=[],editId=null;
+try{const s=localStorage.getItem(KEY);data=s?JSON.parse(s):[]}catch(e){data=[]}
+if(!Array.isArray(data))data=[];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let curList=[],COLETA="",AUTO=false,ME=null,AUTHON=false;
+let col=null,last={},busy=false,again=false,canW=true,SRV=false,PW="";
+const byS=(a,b)=>(a.setor||"").localeCompare(b.setor||"","pt-BR");
+async function persist(){
+  if(!col&&!SRV){try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}return}
+  if(busy){again=true;return}
+  busy=true;
+  try{do{again=false;
+    const cur={};data.forEach(p=>cur[p.id]=JSON.stringify(p));
+    for(const p of data){if(last[p.id]!==cur[p.id]){await (SRV?api("PUT",p.id,JSON.parse(cur[p.id])):col.doc(p.id).set(JSON.parse(cur[p.id])));last[p.id]=cur[p.id]}}
+    for(const id of Object.keys(last)){if(!(id in cur)){await (SRV?api("DELETE",id):col.doc(id).delete());delete last[id]}}
+  }while(again)}catch(e){alert("Não foi possível salvar: "+((e&&(e.message||e.code))||"erro")+(canW?"":" (você tem acesso somente leitura)"))}
+  busy=false;render()}
+async function api(m,id,body){
+  for(let t=0;t<2;t++){
+    const r=await fetch("/api/printers/"+encodeURIComponent(id),{method:m,headers:{"Content-Type":"application/json","X-Senha":PW},body:body?JSON.stringify(body):undefined});
+    if(r.status===401&&AUTHON){location.reload();throw new Error("sessão expirada, entre novamente")}
+    if(r.status===403)throw new Error("seu usuário tem acesso somente de leitura");
+    if(r.status===401){const s=prompt("Senha de edição:");if(s===null)throw new Error("senha não informada");PW=s;try{sessionStorage.setItem("pw",s)}catch(e){}continue}
+    if(!r.ok)throw new Error("HTTP "+r.status);return}
+  throw new Error("senha incorreta")}
+async function initServer(){
+  try{
+    const r=await fetch("/api/printers",{cache:"no-store"});if(r.status===401){location.reload();return true}if(!r.ok)return false;
+    const j=await r.json();if(!j||!Array.isArray(j.printers))return false;
+    SRV=true;try{PW=sessionStorage.getItem("pw")||""}catch(e){}
+    try{const m=await fetch("/api/me",{cache:"no-store"});if(m.ok){ME=await m.json();AUTHON=!!ME.auth;canW=ME.perfil==="admin"}}catch(e){}
+    const apply=l=>{data=l.sort(byS);last={};data.forEach(p=>last[p.id]=JSON.stringify(p));if(migrar()&&canW)persist()};
+    COLETA=j.coleta||"";AUTO=!!j.auto;apply(j.printers);
+    if(SEED.length&&canW&&data.every(p=>/^\(novo\)/.test(p.setor||""))){
+      const byip={};data.forEach(p=>{if(p.ip)byip[p.ip.trim()]=p});
+      SEED.forEach(s=>{const e=byip[(s.ip||"").trim()];
+        if(e){["setor","local","scanner","marca"].forEach(k=>{if(s[k])e[k]=s[k]});["modelo","mac","serie"].forEach(k=>{if(s[k]&&!e[k])e[k]=s[k]})}
+        else data.push({...s})});
+      await persist()}
+    render();
+    setInterval(async()=>{if(busy)return;try{
+      const r=await fetch("/api/printers",{cache:"no-store"});if(r.status===401){location.reload();return}const j=await r.json();
+      const nl={};j.printers.forEach(p=>nl[p.id]=JSON.stringify(p));
+      if(j.coleta!==COLETA||Object.keys(nl).length!==Object.keys(last).length||Object.keys(nl).some(k=>nl[k]!==last[k])){COLETA=j.coleta||"";apply(j.printers);render()}
+    }catch(e){}},15000);
+    return true;
+  }catch(e){return false}
+}
+async function initShared(){
+  try{
+    const u=await claude.use("user");let owner=false;
+    if(u){owner=await u.isOwner();if((await u.can("data.write"))===false)canW=false}
+    const db=await claude.use("db");if(!db)return;
+    col=db.collection("printers");
+    col.onSnapshot(async s=>{
+      if(s.empty&&owner&&SEED.length){
+        const mk=db.doc("meta/seeded");let done=false;
+        try{done=(await mk.get()).exists}catch(e){}
+        if(!done){data=SEED.map(x=>({...x}));last={};await persist();try{await mk.set({em:new Date().toISOString()})}catch(e){}return}
+      }
+      if(busy)return;
+      data=s.docs.map(d=>({...d.data(),id:d.id})).sort((a,b)=>(a.setor||"").localeCompare(b.setor||"","pt-BR"));
+      last={};data.forEach(p=>last[p.id]=JSON.stringify(p));if(migrar()&&canW)persist();render()
+    },e=>{col=null;render()});
+  }catch(e){}
+}
+function guess(m){m=(m||"").trim();return /^brother|^dcp/i.test(m)?"Brother":/epson|^wf-/i.test(m)?"Epson":/^hp/i.test(m)?"HP":/^oki|^es\d/i.test(m)?"OKI":/^ricoh/i.test(m)?"Ricoh":/^savin/i.test(m)?"Savin":""}
+function marca(p){return p.marca||guess(p.modelo)}
+function mod(p){const b=marca(p);return (p.modelo||"").replace(new RegExp("^"+b+"\\s*-?\\s*","i"),"").trim()||p.modelo||""}
+function lvc(v){return v<=10?"var(--er)":v<=25?"var(--wa)":"var(--ok)"}
+function dt(s){const d=new Date(s);return isNaN(d)?"":d.toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}
+const COR={black:"Preto",cyan:"Ciano",magenta:"Magenta",yellow:"Amarelo",preto:"Preto"};
+function cor(i){const m=((i.cor||"")+" "+(i.nome||"")).toLowerCase().match(/black|cyan|magenta|yellow|preto/);return m?COR[m[0]]:""}
+function sups(p,k){const t=k==="toner"?"toner":"cilindro";
+ const a=p.ndd?(p.ndd.suprimentos||[]).filter(i=>i.tipo===t).map(i=>({...i,_f:"NDD",_q:p.ndd.lido_em})):[];
+ const b=p.leitura&&p.leitura.online?(p.leitura.suprimentos||[]).filter(i=>i.tipo===t).map(i=>({...i,_f:"SNMP",_q:p.leitura.lido_em})):[];
+ if(a.length&&b.length)return new Date(p.leitura.lido_em)>new Date(p.ndd.lido_em)?b:a;
+ return a.length?a:b}
+function fonte(i){const old=(Date.now()-new Date(i._q))>48*36e5;return (old?"⚠️ ":"")+i._f+" "+dt(i._q)+(old?" (desatualizado)":"")}
+function lvl(p,k){const v=sups(p,k).map(i=>i.pct).filter(x=>x!=null);return v.length?Math.min(...v):null}
+function prev(i){if(!i.previsao)return"";if(/^\d{2}\/\d{2}\/\d{4}$/.test(i.previsao))return" · acaba em "+i.previsao.slice(0,5)+(i.dias!=null?" ("+i.dias+" d)":"");if(/pr[óo]ximo/i.test(i.previsao))return" · próximo do fim";return""}
+function bar(p,k){const its=sups(p,k);
+ if(!its.length)return p.ndd?"<small>Fora da lista de alertas do NDD</small>":"";
+ return its.map(i=>{const c=cor(i),tip=esc(i.nome||"");
+  return i.pct==null?`<small title="${tip}">${c||"Suprimento"}: nível não informado</small>`:
+  `<div class="lr" title="${tip}">${c?`<span class="cn">${c}</span>`:""}<div class="lv"><i style="width:${i.pct}%;background:${lvc(i.pct)}"></i></div><small><b>${i.pct}%</b>${esc(prev(i))}</small><small class="fo">${fonte(i)}</small></div>`}).join("")}
+function rd(p){const L=p.leitura,N=p.ndd;
+ if(L&&(L.online||!N)){if(!L.online)return`<div class="rd"><span class="tag er">Offline</span><span>${esc(L.erro||"")}</span><span>Lido em ${dt(L.lido_em)}</span></div>`;
+  return`<div class="rd"><span class="tag ok">Online</span>${L.status&&L.status!=="—"?`<span>${esc(L.status)}</span>`:""}${(L.alertas||[]).map(a=>`<span class="tag wa">${esc(a)}</span>`).join("")}${L.paginas!=null?`<span>${L.paginas.toLocaleString("pt-BR")} páginas</span>`:""}<span>Lido em ${dt(L.lido_em)}</span></div>`}
+ if(N){const old=(Date.now()-new Date(N.lido_em))>36*36e5;return`<div class="rd"><span class="tag nn">NDD</span><span>Lido em ${dt(N.lido_em)}</span>${old?'<span class="tag wa">Leitura antiga</span>':""}</div>`}
+ return""}
+const SEDE=["UN1","UN2","UN5","SECAD","CEMETRO","CLINICASMEDVET","CLINICA","UN5/TEMPORARIA"];
+const REN={"UN5/TEMPORARIA":"CLÍNICA"};
+const nrm=s=>(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/\s+/g,"");
+function migrar(){let ch=false;data.forEach(p=>{const n=REN[nrm(p.local)];if(n&&p.local!==n){p.local=n;ch=true}});return ch}
+function inSede(l){return SEDE.includes(nrm(l))}
+function q20(k){return data.reduce((a,p)=>a+sups(p,k).filter(i=>i.pct!=null&&i.pct<=20).length,0)}
+function okf(p,f){const L=p.leitura;return !f||(f==="off"?!!L&&!L.online:(f==="lvl"||f==="lvl20")?[lvl(p,"toner"),lvl(p,"cil")].some(v=>v!=null&&v<=(f==="lvl"?15:20)):p.scanner==="não"||p.scanner==="nao")}
+function st(q,m){if(q==null)return["nn","Não informado"];return q<=0?["er","Sem estoque"]:q<=m?["wa","Baixo"]:["ok","OK"]}
+function url(ip){return /^https?:\/\//i.test(ip)?ip:"http://"+ip}
+function render(){
+  $("add").style.display=$("imp").style.display=canW?"":"none";$("colh").style.display=SRV&&AUTO&&canW?"":"none";
+  const t=$("q").value.toLowerCase(),fs=$("fs").value,fst=$("fst").value,fl=$("fl").value;
+  const locs=[...new Set(data.map(p=>p.local).filter(Boolean))].sort();
+  $("fl").innerHTML='<option value="">Todas as unidades</option><option value="__SEDE__" '+(fl==="__SEDE__"?"selected":"")+'>⭐ SEDE</option>'+locs.map(s=>`<option ${s===fl?"selected":""}>${esc(s)}</option>`).join("");
+  const sets=[...new Set(data.map(p=>p.setor).filter(Boolean))].sort();
+  $("fs").innerHTML='<option value="">Todos os setores</option>'+sets.map(s=>`<option ${s===fs?"selected":""}>${esc(s)}</option>`).join("");
+  const list=curList=data.filter(p=>(!fs||p.setor===fs)&&(!fl||(fl==="__SEDE__"?inSede(p.local):p.local===fl))&&okf(p,fst)&&[marca(p),p.setor,p.local,p.ip,p.modelo,p.mac,p.serie].join(" ").toLowerCase().includes(t));
+  $("chips").innerHTML=`<span class="chip">${data.length} impressoras</span>${AUTHON&&ME?`<span class="chip">👤 ${esc(ME.usuario)} (${ME.perfil==="admin"?"administrador":"leitura"}) · <a href="#" id="sair">Sair</a></span>`:""}${SRV&&AUTO&&COLETA?`<span class="chip">🔄 Coleta automática: ${dt(COLETA)}</span>`:""}${canW?"":'<span class="chip">👁️ Somente leitura</span>'}`+(data.some(p=>p.leitura||p.ndd)?`<span class="chip">🔌 Offline: <b>${data.filter(p=>p.leitura&&!p.leitura.online).length}</b></span><span class="chip">🪫 Nível ≤ 15%: <b>${data.filter(p=>okf(p,"lvl")).length}</b></span><span class="chip">⚠️ Suprimentos ≤ 20%: <b>${q20("toner")+q20("cil")}</b> (toner/tinta ${q20("toner")} · cilindro ${q20("cil")})</span>`:"");
+  $("grid").innerHTML=list.length?list.map(p=>{
+    const sup=(k,l)=>`<div class="sup"><div class="n"><b>${l}</b>${bar(p,k)||"<small>Sem leitura</small>"}</div></div>`;
+    return `<div class="card"><div class="top"><div><b>${esc(p.setor)||"Sem setor"}${p.local?" · "+esc(p.local):""}</b><div class="set">${marca(p)?`<span class="mk">${esc(marca(p))}</span> `:""}${esc(mod(p))||"Sem modelo"}</div></div>${p.ip?`<a class="ip" href="${esc(url(p.ip))}" target="_blank" rel="noopener">Abrir ${esc(p.ip)} ↗</a>`:""}</div>
+<div class="meta"><span>IP</span><span>${esc(p.ip)||"—"}</span><span>MAC</span><span>${esc(p.mac)||"—"}</span><span>Série</span><span>${esc(p.serie)||"—"}</span><span>Scanner</span><span>${p.scanner||"—"}</span></div>
+${rd(p)}${sup("toner","Toner")}${sup("cil","Cilindro")}
+${canW?`<div class="act"><button data-a="e" data-id="${p.id}">Editar</button><button class="d" data-a="x" data-id="${p.id}">Excluir</button></div>`:""}</div>`}).join(""):`<div class="empty" style="grid-column:1/-1">Nenhuma impressora encontrada.</div>`;
+}
+$("grid").onclick=e=>{
+  const b=e.target.closest("button");if(!b)return;
+  const p=data.find(x=>x.id===b.dataset.id);if(!p)return;
+  const a=b.dataset.a;
+  if(a==="e")openDlg(p);
+  else if(a==="x"&&confirm("Excluir "+(marca(p)+" "+mod(p)).trim()+" ("+(p.setor||"")+")?")){data=data.filter(x=>x!==p);persist();render()}
+};
+const F=["setor","local","modelo","ip","mac","serie"];
+function openDlg(p){
+  editId=p?p.id:null;$("dt").textContent=p?"Editar impressora":"Nova impressora";
+  F.forEach(k=>$("f_"+k).value=p?p[k]:"");
+  $("f_marca").value=p?marca(p):"";$("f_scanner").value=p?p.scanner:"";
+  $("dlg").showModal();
+}
+$("add").onclick=()=>openDlg();
+$("cancel").onclick=()=>$("dlg").close();
+$("save").onclick=()=>{
+    const o={setor:$("f_setor").value.trim(),local:$("f_local").value.trim(),marca:$("f_marca").value.trim()||guess($("f_modelo").value),scanner:$("f_scanner").value,modelo:$("f_modelo").value.trim(),ip:$("f_ip").value.trim(),mac:$("f_mac").value.trim().toUpperCase(),serie:$("f_serie").value.trim()};
+  if(editId){Object.assign(data.find(x=>x.id===editId),o)}else data.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),...o});
+  persist();$("dlg").close();render();
+};
+$("q").oninput=$("fl").onchange=$("fs").onchange=$("fst").onchange=render;
+$("exp").onclick=()=>{
+  const a=document.createElement("a");a.href="data:application/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(data,null,2));a.download="impressoras.json";a.click();
+};
+function impJson(t){try{const d=JSON.parse(t);
+  if(d&&Array.isArray(d.impressoras)){let ok=0;const nf=[];d.impressoras.forEach(l=>{const m=data.filter(p=>(p.ip||"").trim()===l.ip);if(m.length){m.forEach(p=>p.leitura=l);ok++}else nf.push(l.ip)});persist();render();
+   alert(ok+" impressoras atualizadas ("+(d.impressoras.filter(l=>l.online).length)+" online)."+(nf.length?"\nIPs não cadastrados: "+nf.join(", "):""))}
+  else if(Array.isArray(d)&&confirm("Substituir os dados atuais pelos do arquivo?")){data=d;persist();render()}
+  else if(!Array.isArray(d))alert("Arquivo inválido")}catch(x){alert("Arquivo inválido")}}
+function csv(t){const rows=[];let r=[],f="",q=false;for(let i=0;i<t.length;i++){const c=t[i];if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}else if(c==='"')q=true;else if(c===";"){r.push(f);f=""}else if(c==="\n"){r.push(f);rows.push(r);r=[];f=""}else if(c!=="\r")f+=c}if(f||r.length){r.push(f);rows.push(r)}return rows}
+function pdt(s){const m=(s||"").match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2}):?(\d{2})?/);return m?`${m[3]}-${m[2]}-${m[1]}T${m[4]}:${m[5]}:${m[6]||"00"}`:""}
+function impCsv(t){
+ const rows=csv(t).filter(r=>r.length>3),hd=rows.shift()||[],ix={};hd.forEach((n,i)=>ix[n.trim()]=i);
+ if(ix["Current Supply"]==null||ix["IP"]==null){alert("Arquivo inválido");return}
+ const g=(r,n)=>(r[ix[n]]||"").trim(),by={};
+ rows.forEach(r=>{const ip=g(r,"IP");if(!ip)return;(by[ip]=by[ip]||{ip,r0:r,s:[]}).s.push(r)});
+ let ok=0;const novos=[],tocados=new Set();
+ Object.values(by).forEach(({ip,r0,s})=>{
+  const sup=s.map(r=>{const ty=g(r,"Type"),lv=parseInt(g(r,"Current Level")),d=parseInt(g(r,"Remaining days"));
+   const tipo=/drum/i.test(ty)?"cilindro":/toner|ink/i.test(ty)?"toner":null;if(!tipo)return null;
+   return{nome:g(r,"Current Supply"),tipo,cor:g(r,"Color"),pct:isNaN(lv)||lv<0?null:lv,previsao:g(r,"Finishing Prediction"),dias:isNaN(d)?null:d}}).filter(Boolean);
+  const n={fonte:"NDD",lido_em:s.map(r=>pdt(g(r,"Last Reading"))).sort().pop(),suprimentos:sup};
+  const serie=g(r0,"Printer Serial Number").toUpperCase();
+  const m=data.filter(p=>(p.ip||"").trim()===ip||(serie&&(p.serie||"").trim().toUpperCase()===serie));
+  if(m.length){m.forEach(p=>{p.ndd=n;tocados.add(p)});ok++}else novos.push({ip,serie:g(r0,"Printer Serial Number"),setor:g(r0,"Printer Name"),local:g(r0,"Site"),modelo:g(r0,"Model"),marca:g(r0,"Manufacturer"),n})});
+ const lidoMax=rows.map(r=>pdt(g(r,"Last Reading"))).sort().pop()||"";let saiu=0;
+ data.forEach(p=>{if(p.ndd&&!tocados.has(p)&&(p.ndd.suprimentos||[]).length){p.ndd={fonte:"NDD",lido_em:lidoMax,suprimentos:[]};saiu++}});
+ let add=0;
+ if(novos.length&&confirm(novos.length+" impressoras do NDD não estão cadastradas.\nAdicionar ao sistema?")){novos.forEach(x=>{data.push({id:"n"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),setor:x.setor,local:x.local,marca:x.marca,modelo:x.modelo,ip:x.ip,mac:"",serie:x.serie,scanner:"",ndd:x.n});add++})}
+ persist();render();alert((saiu?saiu+" impressoras saíram da lista de alertas do NDD (suprimento reposto).\n":"")+ok+" impressoras atualizadas com dados do NDD"+(add?"; "+add+" novas adicionadas.":novos.length?"; "+novos.length+" não cadastradas foram ignoradas.":"."))}
+function nivel(p){const v=[lvl(p,"toner"),lvl(p,"cil")].filter(x=>x!=null);return v.length?Math.min(...v):null}
+function emo(v){return v==null?"⚪":v<=5?"🔴":v<=10?"🟠":v<=20?"🟡":"🟢"}
+function txs(p,k){const its=sups(p,k).filter(i=>i.pct!=null);if(!its.length)return"—";return its.map(i=>(cor(i)&&(k==="toner"||its.length>1)?cor(i).toLowerCase()+" ":"")+i.pct+"%").join(" / ")}
+function tcase(s){const lo=["DE","DA","DO","DAS","DOS","E"];if(!s||s!==s.toUpperCase())return s||"";return s.split(/\s+/).map(w=>lo.includes(w)?w.toLowerCase():/\d/.test(w)||["RH","TI","EAD","ZL","CPD","NADI"].includes(w)?w:w[0]+w.slice(1).toLowerCase()).join(" ")}
+function lido(p){return (p.ndd&&p.ndd.lido_em)||(p.leitura&&p.leitura.lido_em)||""}
+function velha(p){const l=lido(p);return !!l&&(Date.now()-new Date(l))>36*36e5}
+function linha(p,mk){
+  const tn=txs(p,"toner"),cl=txs(p,"cil"),ps=[];
+  if(tn!=="—")ps.push("Toner "+tn);if(cl!=="—")ps.push("Cilindro "+cl);
+  const its=[...sups(p,"toner"),...sups(p,"cil")].filter(i=>i.pct!=null).sort((a,b)=>a.pct-b.pct);
+  const m=its[0]&&its[0].previsao&&its[0].previsao.match(/^(\d{2}\/\d{2})\/\d{4}$/);
+  const vel=mk&&velha(p);
+  return "• *"+tcase(p.setor||"Sem setor")+"*"+(p.local?" ("+p.local+")":"")+": "+(ps.join(" · ")||"sem leitura")+(m?" ⏳ "+m[1]:"")+(vel?" ⚠️ leitura antiga":"")}
+function relatorio(){
+  const L=[...curList].filter(p=>nivel(p)!=null).sort((a,b)=>nivel(a)-nivel(b));
+  const fe=$("fst"),f=[];
+  if(fe.value&&fe.options)f.push(fe.options[fe.selectedIndex].text);
+  if($("fl").value)f.push($("fl").value==="__SEDE__"?"SEDE":$("fl").value);if($("fs").value)f.push($("fs").value);if($("q").value)f.push('busca "'+$("q").value+'"');
+  const ds=L.map(lido).filter(Boolean).sort(),tv=L.filter(velha).length,todas=tv>0&&tv===L.filter(p=>lido(p)).length;
+  let t="📋 *RELATÓRIO DE SUPRIMENTOS*\n"+(ds.length?"🗓️ Leitura: "+dt(ds[ds.length-1]):"🗓️ Emitido em "+new Date().toLocaleDateString("pt-BR"))+"\n🔎 Filtro: "+(f.join(" · ")||"todas as impressoras")+"\n"+(todas?"⚠️ Leituras com mais de 36 h. Reimporte o NDD para atualizar.\n":"");
+  const fx=[["🔴","CRÍTICO (até 5%)",v=>v<=5],["🟠","ALTO (6 a 10%)",v=>v>5&&v<=10],["🟡","ATENÇÃO (11 a 20%)",v=>v>10&&v<=20],["🟢","OK (acima de 20%)",v=>v>20]],cont=[];
+  fx.forEach(([e,nm,fn])=>{const g=L.filter(p=>{const v=nivel(p);return v!=null&&fn(v)});cont.push(g.length);if(g.length)t+="\n"+e+" *"+nm+"* — "+g.length+"\n"+g.map(p=>linha(p,!todas)).join("\n")+"\n"});
+  t+="\n📦 *RESUMO:* "+L.length+" impressoras · 🔴 "+cont[0]+" · 🟠 "+cont[1]+" · 🟡 "+cont[2]+(cont[3]?" · 🟢 "+cont[3]:"");
+  return t}
+$("rel").onclick=()=>{const t=relatorio();$("rtxt").value=t;const w=$("rwa");
+  if(t.length<3500){w.href="https://wa.me/?text="+encodeURIComponent(t);w.style.display=""}else w.style.display="none";
+  $("rdlg").showModal()};
+$("colh").onclick=async()=>{
+  for(let t=0;t<2;t++){
+    const r=await fetch("/api/coletar",{method:"POST",headers:{"X-Senha":PW}});
+    if(r.status===401&&AUTHON){location.reload();return}if(r.status===403){alert("Seu usuário tem acesso somente de leitura.");return}
+    if(r.status===401){const s=prompt("Senha de edição:");if(s===null)return;PW=s;try{sessionStorage.setItem("pw",s)}catch(e){}continue}
+    alert(r.ok?"Coleta iniciada. Em cerca de 1 minuto os níveis aparecem atualizados.":"Não foi possível iniciar a coleta.");return}};
+$("chips").onclick=e=>{if(e.target.id==="sair"){e.preventDefault();fetch("/api/logout",{method:"POST"}).finally(()=>location.reload())}};
+$("rclose").onclick=()=>$("rdlg").close();
+$("rcopy").onclick=async()=>{const t=$("rtxt"),b=$("rcopy");try{await navigator.clipboard.writeText(t.value)}catch(e){t.select();document.execCommand("copy")}b.textContent="Copiado ✓";setTimeout(()=>b.textContent="Copiar",1500)};
+$("imp").onclick=()=>$("file").click();
+$("file").onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();r.onload=()=>{const t=r.result.replace(/^\uFEFF/,"");if(/^\s*[\[{]/.test(t))impJson(t);else impCsv(t)};r.readAsText(f);e.target.value="";
+};
+if(migrar())persist();
+render();
+initServer().then(ok=>{if(!ok)initShared()});
+</script>
+</body>
+</html>

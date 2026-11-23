@@ -1,0 +1,8 @@
+frontend/node_modules/
+frontend/dist/
+__pycache__/
+*.pyc
+.env
+# Dados reais do ambiente: manter localmente, não enviar ao Git público
+dados.json
+usuarios.json

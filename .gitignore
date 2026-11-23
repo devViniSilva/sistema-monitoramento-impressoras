@@ -3,6 +3,6 @@ frontend/dist/
 __pycache__/
 *.pyc
 .env
-# Dados reais do ambiente: manter localmente, não enviar ao Git público
+# Dados reais do ambiente: manter localmente
 dados.json
 usuarios.json
